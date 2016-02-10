@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <appender name="logMsgAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>C:\log\logMsgAppender.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logMsgAppender-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <append>true</append>
+        <encoder>
+            <pattern>%d{"HH:mm:ss,SSS Z" GMT} [%t] [%c{0}] [%p] %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="LOGGED_MSG_LOGGER" level="INFO">
+        <appender-ref ref="logMsgAppender"/>
+    </logger>
+</configuration>
