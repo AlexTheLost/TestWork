@@ -3,42 +3,32 @@ package com.alex.config;
 
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 import javax.annotation.Resource;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 
 @Configuration
 @PropertySource(value = "classpath:elasticsearch.properties")
-@EnableElasticsearchRepositories(basePackages = "com.alex.repository")
 public class ElasticsearchConfiguration {
     @Resource
     private Environment environment;
 
-
-    @Bean
-    public ElasticsearchOperations elasticsearchTemplate() {
-        return new ElasticsearchTemplate(client());
-    }
-
-
     @Bean
     public Client client() {
-        return new TransportClient(getSettings()).addTransportAddress(new InetSocketTransportAddress(getHost(), getPort()));
+        return TransportClient.builder().settings(getSettings()).build().addTransportAddress(new InetSocketTransportAddress(getHost(), getPort()));
     }
 
 
     private Settings getSettings() {
-        return ImmutableSettings.settingsBuilder().put("cluster.name", "elasticsearch").build();
+        return Settings.builder().put("cluster.name", "elasticsearch").build();
     }
 
 
@@ -47,7 +37,11 @@ public class ElasticsearchConfiguration {
     }
 
 
-    private String getHost() {
-        return environment.getProperty("elasticsearch.host");
+    private InetAddress getHost() {
+        try {
+            return InetAddress.getByName(environment.getProperty("elasticsearch.host"));
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

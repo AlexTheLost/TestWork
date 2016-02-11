@@ -1,7 +1,7 @@
 package com.alex.config;
 
 
-import com.alex.service.Receiver;
+import com.alex.service.ReceiverService;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
@@ -12,12 +12,10 @@ import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 
 @Configuration
 @PropertySource(value = "classpath:elasticsearch.properties")
-@EnableElasticsearchRepositories(basePackages = "com.alex.repository")
 public class AmqpConfiguration {
     public final static String QUEUE_NAME = "QUEUE_NAME";
 
@@ -52,14 +50,7 @@ public class AmqpConfiguration {
 
 
     @Bean
-    MessageListenerAdapter listenerAdapter(Receiver receiver) {
+    MessageListenerAdapter listenerAdapter(ReceiverService receiver) {
         return new MessageListenerAdapter(receiver, "receiveMessage");
     }
-
-
-    @Bean
-    Receiver receiver() {
-        return new Receiver();
-    }
-
 }
