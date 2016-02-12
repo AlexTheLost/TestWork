@@ -1,35 +1,51 @@
 package com.alex;
 
 
+import com.alex.service.ElasticsearchBulkService;
 import com.alex.service.LogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
+import java.util.stream.IntStream;
 
 
 @SpringBootApplication
 public class Application implements CommandLineRunner {
     public static final String LOGGED_MSG_LOGGER = "LOGGED_MSG_LOGGER";
 
-    private static final int COUNT_OF_MSG = 20;
+    private static final int DEF_COUNT_OF_MSG = 1000;
 
     @Autowired
     private LogService logService;
+
+    @Autowired
+    private ElasticsearchBulkService bulkService;
 
 
     public static void main(String[] args) throws InterruptedException {
         SpringApplication.run(Application.class, args);
     }
 
-
     @Override
     public void run(String... args) throws Exception {
-        Stream.generate(new AtomicInteger()::getAndIncrement).limit(COUNT_OF_MSG).forEach(i -> logService.log("test", "test: " + i));
-        TimeUnit.SECONDS.sleep(100000);
+        int count = countOfMsg(args);
+        System.out.println("Start app, with count of msg: " + count);
+        IntStream.iterate(1, i -> ++i).limit(count).forEach(this::log);
+        while (bulkService.counter.get() >= count) ;
+        System.out.println("End of processing.");
+    }
+
+    private int countOfMsg(String[] args) {
+        return args.length > 0 ? Integer.valueOf(args[0]) : DEF_COUNT_OF_MSG;
+    }
+
+    private void log(int number) {
+        logService.log(category(number), "number: " + number);
+    }
+
+    private String category(int number) {
+        return number % 2 == 0 ? "even" : "odd";
     }
 }

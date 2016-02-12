@@ -18,13 +18,13 @@ public class ReceiverService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    private ElasticsearchBulkService esBulkService;
+    private ElasticsearchBulkService bulkService;
 
 
     public void receiveMessage(String message) {
         try {
             UnprocessedMsg msg = objectMapper.readValue(message, UnprocessedMsg.class);
-            esBulkService.indexingFromJson(msg.getIndex(), msg.getSource());
+            bulkService.indexingFromJson(msg.getIndex(), msg.getSource());
             logger.info("Received unprocessed message: {}", message);
         } catch (IOException e) {
             throw new IllegalStateException("For msg: " + message, e);

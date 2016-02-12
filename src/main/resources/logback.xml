@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <!--<include resource="org/springframework/boot/logging/logback/base.xml"/>-->
 
     <appender name="logMsgAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>C:\log\logMsgAppender.log</file>
@@ -14,7 +14,11 @@
         </encoder>
     </appender>
 
-    <logger name="LOGGED_MSG_LOGGER" level="INFO">
+    <logger name="LOGGED_MSG_LOGGER" level="WARN">
+        <appender-ref ref="logMsgAppender"/>
+    </logger>
+
+    <logger name="com.alex.service.ElasticsearchBulkService" level="WARN">
         <appender-ref ref="logMsgAppender"/>
     </logger>
 </configuration>
