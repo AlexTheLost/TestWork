@@ -19,7 +19,7 @@ public class DelayedLoggingService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    RabbitTemplate rabbitTemplate;
+    private RabbitTemplate rabbitTemplate;
 
 
     public void toAmqpBroker(String index, String source) {

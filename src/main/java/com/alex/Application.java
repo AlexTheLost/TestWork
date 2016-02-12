@@ -32,7 +32,7 @@ public class Application implements CommandLineRunner {
     public void run(String... args) throws Exception {
         int count = countOfMsg(args);
         System.out.println("Start app, with count of msg: " + count);
-        IntStream.iterate(1, i -> ++i).limit(count).forEach(this::log);
+        IntStream.range(0, count).forEach(this::log);
         while (bulkService.counter.get() >= count) ;
         System.out.println("End of processing.");
     }
